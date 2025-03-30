@@ -17,7 +17,7 @@
             overflow: hidden;
         }
 
-        /* Background Animation */
+        /* Animated Background */
         body::before {
             content: "";
             position: absolute;
@@ -37,7 +37,6 @@
             perspective: 1000px;
         }
 
-        /* Card */
         .card {
             width: 300px;
             height: 200px;
@@ -91,7 +90,7 @@
             text-align: center;
         }
 
-        /* Glowing Heart */
+        /* Glowing, Beating Heart */
         .heart {
             font-size: 50px;
             color: #e91e63;
@@ -110,13 +109,14 @@
             100% { transform: scale(1); }
         }
 
-        /* Confetti */
-        .confetti {
+        /* Falling Flower Petals */
+        .petal {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            background: red;
-            opacity: 0;
+            width: 15px;
+            height: 15px;
+            background: pink;
+            border-radius: 50%;
+            opacity: 0.8;
             animation: fall linear infinite;
         }
 
@@ -124,16 +124,14 @@
             0% { transform: translateY(-50px) rotate(0); opacity: 1; }
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
-
-        /* Footer */
-        .footer {
-            font-size: 14px;
-            color: #777;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
+
+    <!-- Background Music -->
+    <audio id="music" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-sweet.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- Card Container -->
     <div class="card-container" onclick="openCard()">
@@ -153,27 +151,39 @@
                     Wishing you a beautiful day filled with joy!
                 </p>
                 <div class="heart">❤️</div>
-                <p class="footer">Lots and lots of love,<br>William</p>
             </div>
         </div>
     </div>
 
-    <!-- Confetti -->
+    <!-- Confetti & Petals -->
     <script>
         function openCard() {
             document.querySelector(".card-container").classList.add("open");
+            document.getElementById("music").play();
             createConfetti();
+            createPetals();
         }
 
         function createConfetti() {
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 50; i++) {
                 let confetti = document.createElement("div");
-                confetti.className = "confetti";
+                confetti.className = "petal";
                 confetti.style.left = Math.random() * 100 + "vw";
                 confetti.style.animationDuration = Math.random() * 3 + 2 + "s";
                 confetti.style.background = ["red", "blue", "yellow", "green", "pink", "purple"][Math.floor(Math.random() * 6)];
                 document.body.appendChild(confetti);
                 setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+
+        function createPetals() {
+            for (let i = 0; i < 20; i++) {
+                let petal = document.createElement("div");
+                petal.className = "petal";
+                petal.style.left = Math.random() * 100 + "vw";
+                petal.style.animationDuration = Math.random() * 5 + 3 + "s";
+                document.body.appendChild(petal);
+                setTimeout(() => petal.remove(), 7000);
             }
         }
     </script>
