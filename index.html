@@ -16,53 +16,69 @@
             height: 100vh;
             overflow: hidden;
         }
-        
-        .card {
-            width: 300px;
-            height: 200px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 22px;
-            color: #e91e63;
-            font-weight: bold;
-            cursor: pointer;
-            position: relative;
-            transition: transform 0.6s ease-in-out;
-        }
 
-        .card:hover {
-            transform: scale(1.05);
-        }
-
-        .card-content {
+        /* Background Animation */
+        body::before {
+            content: "";
             position: absolute;
             width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.4s ease-in-out;
+            background: radial-gradient(circle, rgba(255,192,203,1) 0%, rgba(255,255,255,1) 100%);
+            animation: backgroundFade 5s infinite alternate;
         }
 
-        .hidden-content {
+        @keyframes backgroundFade {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
+        }
+
+        /* Card Container */
+        .card-container {
+            perspective: 1000px;
+        }
+
+        /* Card */
+        .card {
+            width: 300px;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+            cursor: pointer;
+        }
+
+        /* Front & Back */
+        .card-front, .card-back {
+            width: 100%;
+            height: 100%;
             position: absolute;
-            width: 350px;
-            height: 450px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transform: scale(0.5);
-            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+            backface-visibility: hidden;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Front */
+        .card-front {
+            background: #fff;
+            font-size: 22px;
+            color: #e91e63;
+            font-weight: bold;
+        }
+
+        /* Back */
+        .card-back {
+            background: white;
+            transform: rotateY(180deg);
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* Open Card */
+        .open .card {
+            transform: rotateY(180deg);
         }
 
         h1 {
@@ -75,10 +91,17 @@
             text-align: center;
         }
 
+        /* Glowing Heart */
         .heart {
             font-size: 50px;
             color: #e91e63;
-            animation: heartbeat 1.5s infinite;
+            text-shadow: 0 0 15px red;
+            animation: glow 1.5s infinite alternate, heartbeat 1.5s infinite;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px red; }
+            100% { text-shadow: 0 0 20px red; }
         }
 
         @keyframes heartbeat {
@@ -87,6 +110,22 @@
             100% { transform: scale(1); }
         }
 
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: red;
+            opacity: 0;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-50px) rotate(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Footer */
         .footer {
             font-size: 14px;
             color: #777;
@@ -96,31 +135,46 @@
 </head>
 <body>
 
-    <!-- Clickable Card -->
-    <div class="card" onclick="openCard()">
-        <div class="card-content">💌 Click to Open</div>
+    <!-- Card Container -->
+    <div class="card-container" onclick="openCard()">
+        <div class="card">
+            <!-- Front of Card -->
+            <div class="card-front">
+                💌 Click to Open
+            </div>
+            <!-- Back of Card (Message) -->
+            <div class="card-back">
+                <h1>Happy Mother's Day! 💐</h1>
+                <p class="message">Dear Mummy,</p>
+                <p class="message">
+                    Thank you for everything you have done for me over the past year. <br>
+                    You are the best mother a son could ask for—patient, kind, and supportive. <br>
+                    You make the world a better place just by being in it. <br>
+                    Wishing you a beautiful day filled with joy!
+                </p>
+                <div class="heart">❤️</div>
+                <p class="footer">Lots and lots of love,<br>William</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Hidden Message (Appears When Clicked) -->
-    <div class="hidden-content" id="messageBox">
-        <h1>Happy Mother's Day! 💐</h1>
-        <p class="message">Dear Mummy,</p>
-        <p class="message">
-            Thank you for everything you have done for me over the past year. <br>
-            You are the best mother a son could ask for—patient, kind, and supportive. <br>
-            You make the world a better place just by being in it. <br>
-            Wishing you a beautiful day filled with joy!
-        </p>
-        <div class="heart">❤️</div>
-        <p class="footer">Lots and lots of love,<br>William</p>
-    </div>
-
+    <!-- Confetti -->
     <script>
         function openCard() {
-            document.querySelector(".card").style.display = "none";
-            let messageBox = document.getElementById("messageBox");
-            messageBox.style.opacity = "1";
-            messageBox.style.transform = "scale(1)";
+            document.querySelector(".card-container").classList.add("open");
+            createConfetti();
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                let confetti = document.createElement("div");
+                confetti.className = "confetti";
+                confetti.style.left = Math.random() * 100 + "vw";
+                confetti.style.animationDuration = Math.random() * 3 + 2 + "s";
+                confetti.style.background = ["red", "blue", "yellow", "green", "pink", "purple"][Math.floor(Math.random() * 6)];
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }
         }
     </script>
 
